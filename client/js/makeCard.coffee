@@ -18,13 +18,15 @@ MakeCard = React.createClass
 
 
   getInitialState: ->
-    title:    ''
-    name:     ''
-    hash:     ''
-    content:  ''
-    tags:     []
-    tag:      ''
-    image:    ''
+    title:        ''
+    name:         ''
+    hash:         ''
+    content:      ''
+    tags:         []
+    tag:          ''
+    image:        ''
+    submitClass:  'submit'
+    submitValue:  'Post'
 
   
   titleHandle: (event) ->
@@ -70,12 +72,20 @@ MakeCard = React.createClass
 
 
   imageHandle: (event) ->
+    @setState submitClass: 'submit void'
+    @setState submitValue: 'Uploading..'
+
+    enableSubmitButton = =>
+      @setState submitValue: 'Post'
+      @setState submitClass: 'submit'
+
     reader = new FileReader()
     file   = event.target.files[0]
 
     cardsImage = new Parse.File 'image.png', file
 
     cardsImage.save().then =>
+      enableSubmitButton()
       @setState image: cardsImage._url
 
 
@@ -85,36 +95,45 @@ MakeCard = React.createClass
 
   submitNewCard: ->
 
-    makeNewCard = (cardNumber) =>
+    if @state.submitClass is 'submit'
 
-      newCard = new Card()
-      newCard.set 'content',    @state.content
-      newCard.set 'name',       @state.name
-      newCard.set 'title',      @state.title
-      newCard.set 'tags',       @state.tags
-      newCard.set 'image',      @state.image
-      newCard.set 'postNumber', cardNumber
-      if @state.hash isnt ''
-        newCard.set 'hash', (SHA256 @state.hash).toString()
-      else
-        newCard.set 'hash', ''
-
-      newCard.save null, 
-        success: ->
-
-        error: (object, error) ->
-          console.log 'did not worked :(', object, error
+      goToNewCard = (postId) =>
+        @transitionTo '/post/' + postId
 
 
-    PostCount = Parse.Object.extend 'PostCount'
-    query = new Parse.Query(PostCount)
-    query.get "wmVCATl0Wb",
+      makeNewCard = (cardNumber) =>
 
-      success: (postCount) =>
-        makeNewCard( postCount.attributes.total )
-    
-      error: (object, error) =>
-        console.log 'ERROR IS', object, error
+        newCard = new Card()
+        newCard.set 'content',            @state.content
+        newCard.set 'name',               @state.name
+        newCard.set 'title',              @state.title
+        newCard.set 'tags',               @state.tags
+        newCard.set 'image',              @state.image
+        newCard.set 'postNumber',         cardNumber
+        newCard.set 'highestReplyChild',  cardNumber
+        if @state.hash isnt ''
+          newCard.set 'hash', (SHA256 @state.hash).toString()
+        else
+          newCard.set 'hash', ''
+
+        newCard.save null, 
+          success: (card) =>
+            goToNewCard card.id
+
+          error: (object, error) ->
+            console.log 'did not worked :(', object, error
+
+
+      PostCount = Parse.Object.extend 'PostCount'
+
+      query = new Parse.Query PostCount
+      query.get "wmVCATl0Wb",
+
+        success: (postCount) =>
+          makeNewCard( postCount.attributes.total )
+      
+        error: (object, error) =>
+          console.log 'ERROR IS', object, error
 
 
 
@@ -129,6 +148,7 @@ MakeCard = React.createClass
         marginRight: 'auto'
 
       div null,
+
         p 
           style:
             display: 'inline-block'
@@ -141,7 +161,7 @@ MakeCard = React.createClass
             float:   'right'
             cursor:  'pointer'
           className: 'exit'
-          onClick: @exit
+          onClick:   @exit
           'X'
 
       input
@@ -173,12 +193,12 @@ MakeCard = React.createClass
 
         _.map @state.tags, (tag, tagIndex) =>
           p
-            className: 'tag'
+            className:    'tag'
             style:
-              display: 'inline-block'
-              cursor: 'pointer'
+              display:    'inline-block'
+              cursor:     'pointer'
             'data-index': tagIndex
-            onClick: @removeTag
+            onClick:      @removeTag
             tag + ' X'
 
 
@@ -196,9 +216,9 @@ MakeCard = React.createClass
         input
           style:
             display: 'inline-block'
-          className: 'submit'
+          className: @state.submitClass
           type:      'submit'
-          value:     'Post'
+          value:     @state.submitValue
           onClick:   @submitNewCard
 
         input
