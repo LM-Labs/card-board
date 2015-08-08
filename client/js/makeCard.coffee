@@ -155,7 +155,6 @@ MakeCard = React.createClass
 
   render: ->
 
-    # if Parse.User.current()?
     div 
       className: 'makeACard'
       style:
@@ -243,11 +242,6 @@ MakeCard = React.createClass
             marginLeft: '1em'
           type:         'file'
           onChange:     @imageHandle
-    
-    # else
-
-    #   Login()
-
 
 
 module.exports = MakeCard

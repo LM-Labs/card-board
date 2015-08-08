@@ -39,6 +39,7 @@ module.exports =
     else
       string
 
+
   formatTag: (tag) ->
     if tag.length > 10
       tag = tag.slice 0, 11

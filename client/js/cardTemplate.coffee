@@ -79,6 +79,7 @@ module.exports = (card, cardIndex, open) ->
             className: 'tiny'
             formatTag tag
 
+
     _.map breakIntoParagraphs(card.content), (paragraph) ->
       
       p

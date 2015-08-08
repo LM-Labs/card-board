@@ -80,16 +80,6 @@ IndexClass = React.createClass
             marginRight:  '1em'
             display:      'inline-block'
 
-          # a
-          #   href: 'http://www.phxtech.us'
-          #   img
-          #     src:            './LM3.png'
-          #     style:
-          #       height:       '4em'
-          #       float:        'left'
-          #       marginRight:  '1em'
-          #     #   boxShadow:    '2px 2px 1px #59595b'
-
           a 
             className:  'header button'
             onClick:    @returnHome
