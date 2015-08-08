@@ -9,8 +9,10 @@ DefaultRoute  = Router.DefaultRoute
 
 # Pages
 MakeCard          = require './makeCard.coffee'
-SpecificCardView = require './specificCard.coffee'
+SpecificCardView  = require './specificCard.coffee'
 CardsView         = require './cardsView.coffee'
+Login             = require './login.coffee'
+Confirm           = require './confirm.coffee'
 
 # Loader
 CardsLoader = require './cards.loader.coffee'
@@ -48,78 +50,121 @@ IndexClass = React.createClass
           @setState cards: cards
 
 
+  returnHome: ->
+    window.location.assign 'http://www.phxtech.us'
+
+
+  login: ->
+    @transitionTo 'login'
+
+  logout: ->
+    Parse.User.logOut()
+    window.location.reload()
+
   render: ->
 
     div null,
-      div className:    'indent',
-        div className:  'spacer'
 
-        div
+      div
+        style:
+          display:  'table'
+          width:    '100%'
+
+        div 
+          className:      'makeACard'
           style:
-            display:  'table'
-            width:    '100%'
+            padding:      '1em'
+            width:        '100%'
+            height:       '4em'
+            marginBottom: '1em'
+            marginRight:  '1em'
+            display:      'inline-block'
 
-          a
-            href: 'http://www.lmlabs.us'
-            img
-              src:            './LM3.png'
-              style:
-                height:       '4em'
-                float:        'left'
-                marginRight:  '1em'
-                boxShadow:    '2px 2px 1px #59595b'
+          # a
+          #   href: 'http://www.phxtech.us'
+          #   img
+          #     src:            './LM3.png'
+          #     style:
+          #       height:       '4em'
+          #       float:        'left'
+          #       marginRight:  '1em'
+          #     #   boxShadow:    '2px 2px 1px #59595b'
 
-          div 
-            className:      'makeACard'
+          a 
+            className:  'header button'
+            onClick:    @returnHome
             style:
-              padding:      '1em'
-              height:       '4em'
-              marginBottom: '1em'
-              marginRight:  '1em'
-              display:      'inline-block'
-
-            p 
-              className: 'header'
-              style:
-                display: 'inline-block'
-              'Phoenix Tech Card Board'
+              cursor:   'pointer'
+              display:  'inline-block'
+            'Phoenix Tech Card Board'
 
 
-            p
-              className:    'header hilight'
-              style:
-                display:    'inline-block'
-                marginLeft: '1em'
-              '|'
+          p
+            className:    'header hilight'
+            style:
+              display:    'inline-block'
+              marginLeft: '1em'
+            '|'
 
 
-            a 
-              className:     'header button'
-              onClick:       @makeACardToggle
+          a 
+            className:     'header button'
+            onClick:       @makeACardToggle
+            style:
+              cursor:      'pointer'
+              marginLeft:  '1em'
+            'Make a New Card'
+
+
+          p
+            className:    'header hilight'
+            style:
+              display:    'inline-block'
+              marginLeft: '1em'
+            '|'
+
+          input
+            className:    'bigInput'
+            placeholder:  'search tags'
+            onChange:     @searchHandle
+            onKeyPress:   @searchPressHandle
+            value:        @state.searchValue
+
+
+          p
+            className:    'header hilight'
+            style:
+              display:    'inline-block'
+              marginLeft: '1em'
+            '|'
+
+          if Parse.User.current()?
+            a
+              className:    'header button'
               style:
                 cursor:      'pointer'
                 marginLeft:  '1em'
-              'Make a New Card'
-
-
-            p
-              className:    'header hilight'
+              onClick:      @logout
+              'log out'
+              
+          else
+            a
+              className:    'header button'
               style:
-                display:    'inline-block'
-                marginLeft: '1em'
-              '|'
+                cursor:      'pointer'
+                marginLeft:  '1em'
+              onClick:      @login
+              'log in'
 
-            input
-              className:    'bigInput'
-              placeholder:  'search tags'
-              onChange:     @searchHandle
-              onKeyPress:   @searchPressHandle
-              value:        @state.searchValue
+
+        div
+          style:
+            marginLeft: '1em'
 
           RouteHandler
             cards: @state.cards
 
-          div className: 'spacer'
+        div className: 'spacer'
 
 
 
@@ -141,6 +186,17 @@ routes =
       name:    'makeACard'
       path:    'make'
       handler: MakeCard
+
+    Route
+      name:     'login'
+      path:     'login'
+      handler:  Login
+
+    Route
+      name:     'confirm'
+      path:     'confirm'
+      handler:  Confirm
+
 
 Router.run routes, (handler) ->
   React.render handler(), (document.getElementById 'content')

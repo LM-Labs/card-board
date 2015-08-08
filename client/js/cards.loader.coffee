@@ -3,13 +3,14 @@ _       = require 'lodash'
 
 module.exports =
 
+
   getAllCards: (next) =>
 
     setCards = (results) =>
 
       cards = _.map results, (result, resultIndex) =>
-        result.attributes['createdAt'] = result.createdAt
-        result.attributes['_id'] = result.id
+        result.attributes['createdAt']  = result.createdAt
+        result.attributes['_id']        = result.id
         result.attributes
 
       cards = _.sortBy cards, (card) ->

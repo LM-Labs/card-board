@@ -26,7 +26,7 @@ module.exports =
     formattedDate = ''
     formattedDate += date.getFullYear()
     formattedDate += makeTwoDigits(date.getMonth() + 1)
-    formattedDate += makeTwoDigits(date.getDate() + 1)  + ' '
+    formattedDate += makeTwoDigits(date.getDate())  + ' '
     formattedDate += makeTwoDigits(date.getHours())     + ':'
     formattedDate += makeTwoDigits(date.getMinutes() )  + ' '
 

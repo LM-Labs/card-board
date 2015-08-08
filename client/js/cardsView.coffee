@@ -42,4 +42,4 @@ CardsView = React.createClass
       
 
 
-module.exports = React.createFactory CardsView
+module.exports = CardsView

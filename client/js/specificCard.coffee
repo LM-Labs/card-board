@@ -75,8 +75,21 @@ Card = React.createClass
     submitClass:  'submit'
 
 
+  userVerified: ->
+    verified = false
+    if Parse.User.current()?
+      if Parse.User.current().attributes.emailVerified
+        verified = true
+
+    verified
+
+
   exit: ->
     @transitionTo 'Main'
+
+
+  goToLogin: ->
+    @transitionTo 'login'
 
 
   contentHandle: (event) ->
@@ -104,6 +117,12 @@ Card = React.createClass
         __type:     'Pointer'
         className:  'Card'
         objectId:   @state.thisCard.id
+
+      newReply.set 'poster',
+        __type:     'Pointer'
+        className:  'User'
+        objectId:   Parse.User.current().id
+
       if @state.replyHash isnt ''
         newReply.set 'hash', (SHA256 @state.hash).toString()
       else
@@ -323,47 +342,70 @@ Card = React.createClass
                     className: 'point'
                     paragraph
 
-        p
-          className: 'point'
-          ''
+        if @userVerified()
+          
+          div null,
 
-        input
-          className:   'input'
-          placeholder: 'Name'
-          value:       @state.replyName
-          onChange:    @nameHandle
+            p
+              className: 'point'
+              ''
 
-        input
-          className:   'input'
-          placeholder: 'Hash'
-          value:       @state.replyHash
-          onChange:    @hashHandle
+            input
+              className:   'input'
+              placeholder: 'Name'
+              value:       @state.replyName
+              onChange:    @nameHandle
 
-        textarea
-          className:   'inputArea'
-          placeholder: 'Reply'
-          style:
-            height:    '300px'
-          value:       @state.replyContent
-          onChange:    @contentHandle
+            input
+              className:   'input'
+              placeholder: 'Hash'
+              value:       @state.replyHash
+              onChange:    @hashHandle
 
-        div null,
+            textarea
+              className:   'inputArea'
+              placeholder: 'Reply'
+              style:
+                height:    '300px'
+              value:       @state.replyContent
+              onChange:    @contentHandle
 
-          input
-            style:
-              display: 'inline-block'
-            className: @state.submitClass
-            type:      'submit'
-            value:     @state.submitValue
-            onClick:   @submitReply
+            div null,
 
-          input
-            style:
-              display:    'inline-block'
-              marginLeft: '1em'
-            type:         'file'
-            onChange:     @imageHandle
+              input
+                style:
+                  display:    'inline-block'
+                className:    @state.submitClass
+                type:         'submit'
+                value:        @state.submitValue
+                onClick:      @submitReply
 
+              input
+                style:
+                  display:    'inline-block'
+                  marginLeft: '1em'
+                type:         'file'
+                onChange:     @imageHandle
+
+        else
+
+          div null,
+
+            p
+              className: 'point'
+              ''
+            
+            p
+              className:  'point'
+              style:
+                cursor:   'pointer'
+              onClick:  @goToLogin
+              'log in to reply'
+            
+            p
+              className: 'point'
+              ''
+          
     else
 
       div null

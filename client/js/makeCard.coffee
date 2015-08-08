@@ -7,14 +7,24 @@ _       = require 'lodash'
 
 Card = Parse.Object.extend 'Card'
 
+Login = require './login'
+
 # DOM Elements
 {p, div, input, textarea, a} = React.DOM
+
+Authentication =
+  statics:
+    willTransitionTo: (transition) ->
+      unless Parse.User.current()?
+        transition.redirect 'login'
+      unless Parse.User.current()?.attributes.emailVerified
+        transition.redirect 'login'
 
 
 MakeCard = React.createClass
 
 
-  mixins: [ Router.Navigation, Router.State ]
+  mixins: [ Router.Navigation, Router.State, Authentication ]
 
 
   getInitialState: ->
@@ -111,6 +121,12 @@ MakeCard = React.createClass
         newCard.set 'image',              @state.image
         newCard.set 'postNumber',         cardNumber
         newCard.set 'highestReplyChild',  cardNumber
+
+        newCard.set 'poster',
+          __type:     'Pointer'
+          className:  'User'
+          objectId:   Parse.User.current().id
+
         if @state.hash isnt ''
           newCard.set 'hash', (SHA256 @state.hash).toString()
         else
@@ -139,7 +155,7 @@ MakeCard = React.createClass
 
   render: ->
 
-
+    # if Parse.User.current()?
     div 
       className: 'makeACard'
       style:
@@ -227,7 +243,12 @@ MakeCard = React.createClass
             marginLeft: '1em'
           type:         'file'
           onChange:     @imageHandle
+    
+    # else
+
+    #   Login()
 
 
 
-module.exports = React.createFactory MakeCard
+module.exports = MakeCard
+
